@@ -30,7 +30,7 @@ job "randfail" {
           timeout  = "3s"
           check_restart {
             limit = 1
-            grace = "10s"
+            grace = "30s"
             ignore_warnings = false
           }
         }
@@ -45,7 +45,7 @@ job "randfail" {
     }
 
     restart {
-      attempts = 3
+      attempts = 0
       delay    = "10s"
     }
 
@@ -58,6 +58,12 @@ job "randfail" {
         auto_revert       = false
         auto_promote      = false
         canary            = 0
+    }
+
+    reschedule {
+      unlimited = true
+      max_delay = "1m"
+      delay = "10s"
     }
 
   }
