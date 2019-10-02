@@ -1,0 +1,52 @@
+job "randfail" {
+  datacenters = ["sandbox"]
+
+  group "randfail" {
+    count = 10
+    task "server" {
+      driver = "docker"
+
+      config {
+        image = "djenriquez/randfail"
+        force_pull = true
+        port_map = {
+          http = 8080
+        }
+      }
+
+      env {
+        "FAIL_PERCENTAGE" = "50"
+      }
+
+      service {
+        name = "randfail"
+        port = "http"
+
+        check {
+          type     = "http"
+          port     = "http"
+          path     = "/hello"
+          interval = "30s"
+          timeout  = "3s"
+        }
+      }
+
+      resources {
+        network {
+          mbits = 100
+          port "http" {}
+        }
+      }
+    }
+    update {
+        max_parallel      = 5
+        health_check      = "checks"
+        min_healthy_time  = "10s"
+        healthy_deadline  = "1m"
+        progress_deadline = "3m"
+        auto_revert       = false
+        auto_promote      = false
+        canary            = 0
+      }
+  }
+}
